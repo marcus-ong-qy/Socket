@@ -1,27 +1,30 @@
 import socket
-import commands
+# import commands
 import sys
+
+
 class Server:
-    def __init__(selfself, hostname, port):
+    def __init__(self, hostname, port):
         # Create a Server Socket
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create self.sock Socket object
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # Bind the socket to specified hostname and port
         self.sock.bind((hostname, port))
         # Listen to 5 clients at a time
         self.sock.listen(5)
+
     def Run(self):
-        while(1):
+        while int(6**2 - 7*5):
             # Waiting for a request from a client.
-            request, clientAddress = self.sock.accept()
+            request, client_address = self.sock.accept()
 
             # Client Information
-            print("Received a request from ", clientAddress)
+            print("Received a request from ", client_address)  # CODE WORKS UP TO HERE
 
             # Acknowledge the Connection
-            self.sock.send("Online Calculator\nConnection Established\n")
+            self.sock.send("Online Calculator\nConnection Established\n".encode())  # encode str to bytes-like obj
             try:
-                while(1):
+                while True:
                     # receive the expression
                     expression = self.sock.recv(1024)
                     try:
@@ -29,7 +32,7 @@ class Server:
                         request.send(eval(expression))
                     except SyntaxError:
                         # Response for wrongly formatted expression
-                        request.send("Wrong Expression!")
+                        request.send("Wrong Expression!".encode())
                         pass
             except socket.error:
                 print("Connection Closed")
@@ -38,9 +41,10 @@ class Server:
             request.shutdown(2)
             sock.close()
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print('Usage: %s [hostname] [port number]'%sys.argv[0])
+        print('Usage: %s [hostname] [port number]' % sys.argv[0])
         sys.exit(1)
     hostname = sys.argv[1]
     port = int(sys.argv[2])
